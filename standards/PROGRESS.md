@@ -8,33 +8,33 @@
 
 ## 当前状态 (最后更新: 2026-08-02 · by AI)
 
-- **阶段**:`初始化 / 等待 Secrets`
-- **对应 06 六步流程**:`第①步:公开仓库已创建并完成最小引导提交,等待人类配置部署 Secrets`
-- **上一步完成**:`已初始化本地 Git 仓库,创建公开 GitHub 仓库并推送 main 初始提交`
-- **下一步 (TODO 第一条)**:`请人类配置 GitHub Actions Secrets: SSH_PRIVATE_KEY、SSH_HOST、SSH_USER;确认后再开 feature 分支`
-- **阻塞项**:`无(已确认 data/train.csv 包含 subscribe 标签为训练/验证源,data/test.csv 无标签为待预测集)`
+- **阶段**:`引导版完成,PR 已合并,CI/CD 全链路跑通`
+- **对应 06 六步流程**:`第②步(引导提交)→ 第③④⑤步(CI 验证、CD 部署)完成;进入第⑥步:迭代功能开发`
+- **上一步完成**:`PR #1 合并到 main(merge commit 2122ddf);CI(ruff+pytest+docker build)通过;CD 部署成功,健康检查返回 Streamlit 页面`
+- **下一步 (TODO 第一条)**:`实现数据分析 Streamlit 页面,包含基础统计、目标变量分布、字段筛选与分布展示`
+- **阻塞项**:`无(Secrets 早已配置,部署端口已确认)`
 
 ---
 
 ## 待办清单 (TODO,按优先级)
 
-- [ ] 人工确认 `standards/00-project-context.md`、`standards/01-requirements.md` 与本文件初稿
+- [x] 人工确认 `standards/00-project-context.md`、`standards/01-requirements.md` 与本文件初稿
 - [x] 确认 `data/train.csv` / `data/test.csv` 的用途与 `subscribe` 标签来源(train.csv 含标签,test.csv 无)
-- [ ] 建立或确认 GitHub 开源仓库 `banksys_sy_qiuyu`
-- [ ] 提醒并等待人类配置 GitHub Actions Secrets:`SSH_PRIVATE_KEY` / `SSH_HOST` / `SSH_USER`
-- [ ] 从 `main` 创建第一条 feature 分支,建议 `feature/1-project-bootstrap`
-- [ ] 初始化 Python 3.11 + Streamlit 项目结构、依赖文件、README、ruff/pytest 配置
-- [ ] 实现数据加载与字段校验模块,并添加单元测试
+- [x] 建立或确认 GitHub 开源仓库 `banksys_sy_qiuyu`
+- [x] 提醒并等待人类配置 GitHub Actions Secrets:`SSH_PRIVATE_KEY` / `SSH_HOST` / `SSH_USER`(已确认配置完成)
+- [x] 从 `main` 创建第一条 feature 分支,建议 `feature/1-project-bootstrap`
+- [x] 初始化 Python 3.11 + Streamlit 项目结构、依赖文件、README、ruff/pytest 配置
+- [x] 实现数据加载与字段校验模块,并添加单元测试
 - [ ] 实现数据分析 Streamlit 页面,包含基础统计、目标变量分布、字段筛选与分布展示
 - [ ] 实现离线训练 pipeline,包含预处理、模型训练、评估、模型保存与测试
 - [ ] 实现在线预测页面,使用点选/数值控件输入并返回认购预测
-- [ ] 配置 Dockerfile,确保 Streamlit 在 8888 端口运行
-- [ ] 配置 GitHub Actions CI:ruff format、ruff check、pytest coverage、docker build
-- [ ] 配置 GitHub Actions CD:main 合并后部署容器并健康检查
-- [ ] 本地自检通过后提交并推送 feature 分支
-- [ ] 创建 PR,等待 CI 与人工 Review
-- [ ] 人工合并后跟踪 CD,记录最终端口与健康检查结果
-- [ ] 会话结束前持续更新本文件
+- [x] 配置 Dockerfile,确保 Streamlit 在 8888 端口运行
+- [x] 配置 GitHub Actions CI:ruff format、ruff check、pytest coverage、docker build
+- [x] 配置 GitHub Actions CD:main 合并后部署容器并健康检查
+- [x] 本地自检通过后提交并推送 feature 分支
+- [x] 创建 PR,等待 CI 与人工 Review
+- [x] 人工合并后跟踪 CD,记录最终端口与健康检查结果
+- [x] 会话结束前持续更新本文件
 
 ---
 
@@ -59,3 +59,4 @@
 ## 里程碑 (DONE)
 
 - [x] 2026-08-02:读取项目标准文档与数据表头,完成项目上下文、需求用户故事和第一批 TODO 初稿。
+- [x] 2026-08-02:PR #1 合并(commit 2122ddf),CI 通过,CD 部署成功——应用运行于 `http://<SSH_HOST>:8890/`(8888 被占用自动回退),健康检查返回 Streamlit 页面。
