@@ -84,7 +84,7 @@
 
 技术备注:
 - 图表实现需遵循后续数据可视化设计规范;在真正写图表代码前需先读取 `dataviz` 技能。
-- 当前 `data/test.csv` 有 `subscribe` 标签,`data/train.csv` 表头未发现该标签,实现前需确认训练/测试文件语义。
+- 当前 `data/train.csv` 有 `subscribe` 标签,`data/test.csv` 表头未发现该标签(文件命名与常规语义相反,已确认);训练以 `data/train.csv` 为标签来源。
 
 ### US-3 离线训练认购预测模型 · 状态: Backlog
 
