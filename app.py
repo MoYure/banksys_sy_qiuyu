@@ -5,14 +5,15 @@ import plotly.express as px
 import streamlit as st
 
 from src.banksys_sy_qiuyu.data import (
+    MODEL_PATH,
     TARGET_COLUMN,
     available_datasets,
     categorical_columns,
-    feature_columns,
     load_dataset,
     numeric_columns,
     summarize_dataset,
 )
+from src.banksys_sy_qiuyu.predict import load_model, predict_proba
 
 st.set_page_config(
     page_title="Bank Marketing Analytics",
@@ -34,6 +35,12 @@ SERIES_COLORS = [
 @st.cache_data(show_spinner=False)
 def _load_dataset(name: str) -> pd.DataFrame:
     return load_dataset(name)
+
+
+@st.cache_resource(show_spinner=False)
+def _load_model() -> dict | None:
+    """Load the persisted training artifact (pipeline + metadata), if present."""
+    return load_model(MODEL_PATH)
 
 
 def _dataset_selector() -> tuple[str, pd.DataFrame]:
@@ -171,31 +178,38 @@ def render_analysis_page(frame: pd.DataFrame) -> None:
     st.dataframe(filtered.head(200), use_container_width=True, hide_index=True)
 
 
-def render_prediction_page(frame: pd.DataFrame) -> None:
+def render_prediction_page() -> None:
     st.subheader("Online prediction")
-    st.info(
-        "Model training will be implemented in the next module. "
-        "This page reserves the prediction workflow and validates feature inputs."
-    )
-
-    cols = st.columns(2)
-    features = feature_columns(frame)
-    preview_input: dict[str, object] = {}
-    for index, column in enumerate(features[:10]):
-        target_col = cols[index % 2]
-        if frame[column].dtype == "object":
-            values = sorted(frame[column].dropna().unique().tolist())
-            preview_input[column] = target_col.selectbox(column, values)
-        else:
-            series = frame[column].dropna()
-            default = float(series.median()) if not series.empty else 0.0
-            preview_input[column] = target_col.number_input(column, value=default)
-
-    if st.button("Predict", type="primary"):
+    artifact = _load_model()
+    if artifact is None:
         st.warning(
             "No trained model artifact is available yet. Run the offline training module first."
         )
-        st.json(preview_input)
+        return
+
+    st.caption(f"Primary metric: {artifact['primary_metric']}")
+    inputs: dict[str, object] = {}
+    cols = st.columns(2)
+    for index, column in enumerate(artifact["features"]):
+        target_col = cols[index % 2]
+        if column in artifact["categories"]:
+            options = artifact["categories"][column]
+            inputs[column] = target_col.selectbox(column, options)
+        else:
+            default = artifact["numeric_defaults"].get(column, 0.0)
+            inputs[column] = target_col.number_input(column, value=float(default))
+
+    if st.button("Predict", type="primary"):
+        try:
+            sample = pd.DataFrame([inputs])[artifact["features"]]
+            prob_yes = float(predict_proba(artifact, sample)[0, 1])
+        except Exception as exc:  # noqa: BLE001 - surface a friendly message, not a stack trace
+            st.error(f"Prediction failed: {exc}")
+            return
+        if prob_yes >= 0.5:
+            st.success(f"预测:会认购(概率 {prob_yes:.1%})")
+        else:
+            st.warning(f"预测:不会认购(概率 {1 - prob_yes:.1%})")
 
 
 def main() -> None:
@@ -207,7 +221,7 @@ def main() -> None:
     with analysis_tab:
         render_analysis_page(frame)
     with prediction_tab:
-        render_prediction_page(frame)
+        render_prediction_page()
 
 
 if __name__ == "__main__":

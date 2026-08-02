@@ -8,6 +8,8 @@ import pandas as pd
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 DATA_DIR = PROJECT_ROOT / "data"
 TARGET_COLUMN = "subscribe"
+MODEL_DIR = PROJECT_ROOT / "models"
+MODEL_PATH = MODEL_DIR / "model.joblib"
 
 
 @dataclass(frozen=True)

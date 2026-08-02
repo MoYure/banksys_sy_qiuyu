@@ -5,9 +5,24 @@ Bank marketing analytics and subscription prediction app built with Python 3.11 
 ## Features
 
 - Interactive data analysis for the CSV files in `data/`.
-- Reserved online prediction workflow for a later offline-trained model.
+- Online subscription prediction from a persisted model (LR + preprocessing pipeline).
+- Offline training CLI that produces `models/model.joblib` (checked into git, synced by CD).
 - CI checks with ruff, pytest coverage, and Docker build.
 - CD workflow that deploys the Streamlit container to port `8888` with fallback through `8898`.
+
+## Train the Model
+
+```bash
+python -m src.banksys_sy_qiuyu.training            # default: data/train.csv -> models/model.joblib
+python -m src.banksys_sy_qiuyu.training --seed 7 --test-size 0.25
+```
+
+The classifier is a logistic regression with a `ColumnTransformer` preprocessing
+pipeline (one-hot encoded categories with unknown-category tolerance + scaled
+numerics). The target `subscribe` is imbalanced (~13% positive), so the **primary
+metric is ROC-AUC**; accuracy, precision, recall and F1 are also logged. The whole
+pipeline is persisted inside `models/model.joblib`, so prediction reuses exactly
+the same preprocessing as training.
 
 ## Local Setup
 
