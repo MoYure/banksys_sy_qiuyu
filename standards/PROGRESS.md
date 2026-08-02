@@ -8,10 +8,10 @@
 
 ## 当前状态 (最后更新: 2026-08-02 · by AI)
 
-- **阶段**:`初始化 / 需求确认中`
-- **对应 06 六步流程**:`第①步前:项目信息与需求文档已整理,尚未建仓/写代码`
-- **上一步完成**:`已读取 standards/README.md、00、01、PROGRESS、02~06,并按用户输入填写 00/01/PROGRESS 初稿`
-- **下一步 (TODO 第一条)**:`等待用户确认 00-project-context.md 与 01-requirements.md 内容;确认后再进入建仓/工程初始化流程`
+- **阶段**:`初始化 / 等待 Secrets`
+- **对应 06 六步流程**:`第①步:公开仓库已创建并完成最小引导提交,等待人类配置部署 Secrets`
+- **上一步完成**:`已初始化本地 Git 仓库,创建公开 GitHub 仓库并推送 main 初始提交`
+- **下一步 (TODO 第一条)**:`请人类配置 GitHub Actions Secrets: SSH_PRIVATE_KEY、SSH_HOST、SSH_USER;确认后再开 feature 分支`
 - **阻塞项**:`需确认 data/train.csv 未包含 subscribe 标签是否符合预期,以及训练数据应以哪个文件为准`
 
 ---
