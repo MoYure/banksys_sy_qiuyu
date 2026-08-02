@@ -12,7 +12,7 @@
 - **对应 06 六步流程**:`第②步(引导提交)→ 第③④⑤步(CI 验证、CD 部署)完成;进入第⑥步:迭代功能开发`
 - **上一步完成**:`PR #1 合并到 main(merge commit 2122ddf);CI(ruff+pytest+docker build)通过;CD 部署成功,健康检查返回 Streamlit 页面`
 - **下一步 (TODO 第一条)**:`实现数据分析 Streamlit 页面,包含基础统计、目标变量分布、字段筛选与分布展示`
-- **阻塞项**:`无(Secrets 早已配置,部署端口已确认)`
+- **阻塞项**:`在线预测不可用:模型链路未打通(US-3 训练 pipeline 未实现;.gitignore 排除 models/*.joblib;CD rsync --delete 会清除手动上传的模型)。方案待用户确认,推荐:实现训练 pipeline 并将模型纳入 git`
 
 ---
 
@@ -25,6 +25,7 @@
 - [x] 从 `main` 创建第一条 feature 分支,建议 `feature/1-project-bootstrap`
 - [x] 初始化 Python 3.11 + Streamlit 项目结构、依赖文件、README、ruff/pytest 配置
 - [x] 实现数据加载与字段校验模块,并添加单元测试
+- [ ] **待决**:确认在线预测模型链路方案(推荐:实现 US-3 训练 pipeline,模型纳入 git 随 CD 同步;备选:预测页加 st.file_uploader 上传入口;或两者都要)
 - [ ] 实现数据分析 Streamlit 页面,包含基础统计、目标变量分布、字段筛选与分布展示
 - [ ] 实现离线训练 pipeline,包含预处理、模型训练、评估、模型保存与测试
 - [ ] 实现在线预测页面,使用点选/数值控件输入并返回认购预测
@@ -52,6 +53,7 @@
 ## 已知坑 (GOTCHAS)
 
 - 文件名与常规语义相反:`data/train.csv` 才是带 `subscribe` 标签的训练集,`data/test.csv` 是无标签待预测集;曾一度误判为相反并写入文档,已在测试与文档中修正;验证方式:读取完整表头并在训练入口对标签列做显式校验。
+- 模型文件到达服务器的链路是断的,且有两个隐形坑:(1) `.gitignore` 排除了 `models/*.joblib`,模型不进 git;(2) CD 的 `rsync --delete` 会删除目标端不在 git 内的文件——即使手动 scp 模型到服务器,下次部署也会被清掉。正路是让模型进 git 由 CD 同步,或在 CD 脚本中显式处理模型文件。
 - 当前工作目录环境显示“不是 git repository”:进入建仓/分支流程前需先初始化或创建 GitHub 仓库;验证方式:`git status` 能正常识别仓库。
 
 ---
