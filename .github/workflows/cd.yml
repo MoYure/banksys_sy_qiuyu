@@ -1,0 +1,52 @@
+name: CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Sync project to server
+        run: |
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key" \
+            ./ "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/opt/banksys_sy_qiuyu/"
+
+      - name: Deploy container
+        run: |
+          ssh -i ~/.ssh/deploy_key "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" 'bash -s' <<'SCRIPT'
+          set -e
+          cd /opt/banksys_sy_qiuyu
+          docker build --build-arg PIP_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple -t banksys_sy_qiuyu:latest .
+
+          port_in_use() {
+            ss -ltnH 2>/dev/null | grep -q ":$1 " && return 0
+            docker ps --format "{{.Ports}}" 2>/dev/null | grep -q ":$1->" && return 0
+            return 1
+          }
+
+          PORT=""
+          for p in $(seq 8888 8898); do
+            if ! port_in_use "$p"; then PORT="$p"; break; fi
+          done
+          [ -z "$PORT" ] && { echo "No free port in 8888-8898"; exit 1; }
+
+          docker rm -f banksys_sy_qiuyu 2>/dev/null || true
+          docker run -d --name banksys_sy_qiuyu --restart unless-stopped -p ${PORT}:8888 banksys_sy_qiuyu:latest
+          sleep 5
+          curl -fsS "http://localhost:${PORT}/"
+          echo "DEPLOYED_PORT=${PORT}"
+          echo "URL=http://${{ secrets.SSH_HOST }}:${PORT}/"
+          SCRIPT

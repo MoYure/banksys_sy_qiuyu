@@ -17,8 +17,8 @@
   - 在线预测系统:基于离线训练模型,通过点选/输入客户特征,预测客户是否会认购。
   - 工程化交付:Python 3.11、Streamlit、pytest、ruff、Docker、GitHub Actions CI/CD 全链路跑通。
 - **输入/数据**:`data/` 目录下银行营销 CSV 数据。
-  - `data/test.csv`:包含特征列与 `subscribe` 标签,可用于训练/验证或样本检查。
-  - `data/train.csv`:当前表头未发现 `subscribe` 标签,需要在建模前确认该文件是否为待预测集、是否另有标签文件,或是否文件命名与常规 train/test 语义相反。
+  - `data/train.csv`:包含特征列与 `subscribe` 标签,作为带标签的训练/验证来源。
+  - `data/test.csv`:无 `subscribe` 标签,作为待预测集(文件命名与常规 train/test 语义相反,已确认)。
   - 数据属于课程/公开项目数据;如确认无敏感个人身份信息,可随开源仓库保留。若后续发现敏感字段,必须从 Git 中移除并改为下载或样本化。
 
 ## 2. 技术栈

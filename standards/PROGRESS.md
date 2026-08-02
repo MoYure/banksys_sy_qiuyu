@@ -12,14 +12,14 @@
 - **对应 06 六步流程**:`第①步:公开仓库已创建并完成最小引导提交,等待人类配置部署 Secrets`
 - **上一步完成**:`已初始化本地 Git 仓库,创建公开 GitHub 仓库并推送 main 初始提交`
 - **下一步 (TODO 第一条)**:`请人类配置 GitHub Actions Secrets: SSH_PRIVATE_KEY、SSH_HOST、SSH_USER;确认后再开 feature 分支`
-- **阻塞项**:`需确认 data/train.csv 未包含 subscribe 标签是否符合预期,以及训练数据应以哪个文件为准`
+- **阻塞项**:`无(已确认 data/train.csv 包含 subscribe 标签为训练/验证源,data/test.csv 无标签为待预测集)`
 
 ---
 
 ## 待办清单 (TODO,按优先级)
 
 - [ ] 人工确认 `standards/00-project-context.md`、`standards/01-requirements.md` 与本文件初稿
-- [ ] 确认 `data/train.csv` / `data/test.csv` 的用途与 `subscribe` 标签来源
+- [x] 确认 `data/train.csv` / `data/test.csv` 的用途与 `subscribe` 标签来源(train.csv 含标签,test.csv 无)
 - [ ] 建立或确认 GitHub 开源仓库 `banksys_sy_qiuyu`
 - [ ] 提醒并等待人类配置 GitHub Actions Secrets:`SSH_PRIVATE_KEY` / `SSH_HOST` / `SSH_USER`
 - [ ] 从 `main` 创建第一条 feature 分支,建议 `feature/1-project-bootstrap`
@@ -51,7 +51,7 @@
 
 ## 已知坑 (GOTCHAS)
 
-- `data/train.csv` 表头未发现 `subscribe`,但 `data/test.csv` 包含 `subscribe`:建模前必须确认文件语义或标签来源;验证方式:读取完整表头并在训练入口对标签列做显式校验。
+- 文件名与常规语义相反:`data/train.csv` 才是带 `subscribe` 标签的训练集,`data/test.csv` 是无标签待预测集;曾一度误判为相反并写入文档,已在测试与文档中修正;验证方式:读取完整表头并在训练入口对标签列做显式校验。
 - 当前工作目录环境显示“不是 git repository”:进入建仓/分支流程前需先初始化或创建 GitHub 仓库;验证方式:`git status` 能正常识别仓库。
 
 ---
