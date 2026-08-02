@@ -12,7 +12,7 @@
 - **对应 06 六步流程**:`第②步(引导提交)→ 第③④⑤步(CI 验证、CD 部署)完成;进入第⑥步:迭代功能开发`
 - **上一步完成**:`PR #1 合并到 main(merge commit 2122ddf);CI(ruff+pytest+docker build)通过;CD 部署成功,健康检查返回 Streamlit 页面`
 - **下一步 (TODO 第一条)**:`实现数据分析 Streamlit 页面,包含基础统计、目标变量分布、字段筛选与分布展示`
-- **阻塞项**:`在线预测不可用:模型链路未打通(US-3 训练 pipeline 未实现;.gitignore 排除 models/*.joblib;CD rsync --delete 会清除手动上传的模型)。方案待用户确认,推荐:实现训练 pipeline 并将模型纳入 git`
+- **阻塞项**:`无(模型链路已打通:US-3 训练 pipeline 已实现,models/model.joblib 纳入 git 随 CD 同步,在线预测页已接入真实模型)`
 
 ---
 
@@ -25,10 +25,10 @@
 - [x] 从 `main` 创建第一条 feature 分支,建议 `feature/1-project-bootstrap`
 - [x] 初始化 Python 3.11 + Streamlit 项目结构、依赖文件、README、ruff/pytest 配置
 - [x] 实现数据加载与字段校验模块,并添加单元测试
-- [ ] **待决**:确认在线预测模型链路方案(推荐:实现 US-3 训练 pipeline,模型纳入 git 随 CD 同步;备选:预测页加 st.file_uploader 上传入口;或两者都要)
+- [x] **已决**:实现 US-3 训练 pipeline,模型纳入 git 随 CD 同步(方案 A);预测页接入真实模型
 - [ ] 实现数据分析 Streamlit 页面,包含基础统计、目标变量分布、字段筛选与分布展示
-- [ ] 实现离线训练 pipeline,包含预处理、模型训练、评估、模型保存与测试
-- [ ] 实现在线预测页面,使用点选/数值控件输入并返回认购预测
+- [x] 实现离线训练 pipeline,包含预处理、模型训练、评估、模型保存与测试
+- [x] 实现在线预测页面,使用点选/数值控件输入并返回认购预测
 - [x] 配置 Dockerfile,确保 Streamlit 在 8888 端口运行
 - [x] 配置 GitHub Actions CI:ruff format、ruff check、pytest coverage、docker build
 - [x] 配置 GitHub Actions CD:main 合并后部署容器并健康检查
@@ -62,3 +62,4 @@
 
 - [x] 2026-08-02:读取项目标准文档与数据表头,完成项目上下文、需求用户故事和第一批 TODO 初稿。
 - [x] 2026-08-02:PR #1 合并(commit 2122ddf),CI 通过,CD 部署成功——应用运行于 `http://<SSH_HOST>:8890/`(8888 被占用自动回退),健康检查返回 Streamlit 页面。
+- [x] 2026-08-02:实现 US-3 训练 pipeline(LogisticRegression + ColumnTransformer,主指标 ROC-AUC 0.81,产物 8.7KB),`models/model.joblib` 纳入 git;预测页接入真实模型,在线预测可用。

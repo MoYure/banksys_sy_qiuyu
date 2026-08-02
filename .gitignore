@@ -23,6 +23,7 @@ dist/
 
 # Runtime/model artifacts
 models/*.joblib
+!models/model.joblib
 models/*.pkl
 models/*.pickle
 
